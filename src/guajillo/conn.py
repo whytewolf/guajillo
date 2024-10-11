@@ -1,8 +1,8 @@
 import json
 
+from httpx import URL, AsyncClient, Cookies, Headers, Request
 
 from guajillo.exceptions import GuajilloException
-from httpx import AsyncClient, URL, Headers, Cookies, Request
 
 
 class Guajillo:

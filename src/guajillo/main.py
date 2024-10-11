@@ -1,6 +1,6 @@
 import asyncio
-import guajillo.app as app
 
+import guajillo.app as app
 
 if __name__ == "__main__":
     theapp = app.App()

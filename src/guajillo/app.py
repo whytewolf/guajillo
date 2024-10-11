@@ -1,5 +1,10 @@
+"""
+Main app for cli program
+"""
+
 import argparse
 from pathlib import Path
+
 import tomllib
 from rich import print
 
@@ -40,4 +45,7 @@ class App:
                 print(err)
 
     async def run(self):
+        """
+        Run the bloody thing
+        """
         pass

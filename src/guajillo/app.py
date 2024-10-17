@@ -3,14 +3,14 @@ Main app for cli program
 """
 
 import argparse
-import tomllib
+import json
 import logging
 import sys
-import json
-
+import tomllib
 from pathlib import Path
-from rich.logging import RichHandler
+
 from rich.console import Console
+from rich.logging import RichHandler
 
 from guajillo.conn import Guajillo
 

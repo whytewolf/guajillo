@@ -1,7 +1,8 @@
 import asyncio
 
-import guajillo.app as app
 from rich.traceback import install
+
+import guajillo.app as app
 
 install(show_locals=True)
 

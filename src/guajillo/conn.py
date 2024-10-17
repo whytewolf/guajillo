@@ -1,5 +1,3 @@
-import json
-
 from httpx import URL, AsyncClient, Cookies, Headers, Request
 
 from guajillo.exceptions import GuajilloException
@@ -34,9 +32,11 @@ class Guajillo:
             url,
             headers=self.headers,
             cookies=self.cookies,
-            data=json.dumps(params),
+            json=params,
         )
         response = await self.client.send(request)
         if response.status_code == 200:
             self.cookies = response.cookies
-        return response
+        else:
+            response.raise_for_status()
+        return response.json()

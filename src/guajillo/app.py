@@ -2,85 +2,50 @@
 Main app for cli program
 """
 
-import argparse
-import json
+import asyncio
 import logging
 import sys
 import tomllib
 from pathlib import Path
 
-from rich.console import Console
 from rich.logging import RichHandler
+from rich.traceback import install
 
-from guajillo.conn import Guajillo
+from guajillo.exceptions import TerminateTaskGroup
+from guajillo.utils.cli import CliParse
+from guajillo.utils.conn import Guajillo
+from guajillo.utils.console import console, stderr_console
+from guajillo.utils.outputs import Outputs
 
-FORMAT = "%(message)s"
+FORMAT = "%(asctime)s %(name)s %(taskName)s %(message)s"
 log = logging.getLogger(__name__)
-
-console = Console()
 
 
 class App:
     def __init__(self) -> None:
         self.console = console
+        self.parsed = CliParse()
+        install(show_locals=False)
         """
         FIX: This should not be a part of init. make a setup class. pass results into init
         """
-        self._build_args()
+
+    def setup(self) -> None:
+        self.parsed.build_args()
         self._load_config()
         self._validate_config()
         self._setup_logging()
-        self._load_client()
-
-    def _build_args(self) -> None:
-        """
-        Build the args for the cli command
-
-        TODO: This will become its own class at some point.
-        """
-
-        parser = argparse.ArgumentParser(
-            prog="guajillo",
-            description="Salt-api CLI access",
-            epilog="Copyright 2024 Thomas Phipps",
-        )
-        parser.add_argument(
-            "-C", "--config", dest="config", help="Config file location."
-        )
-        parser.add_argument(
-            "-p",
-            dest="profile",
-            default="netapi",
-            help="profile from config to use for connection",
-        )
-        parser.add_argument(
-            "-o",
-            "--out",
-            dest="output",
-            help="Output method will auto detect if possable, use this to force or set to json for json output",
-        )
-        parser.add_argument(
-            "--out-list", help="list known output methods", action="store_true"
-        )
-        parser.add_argument("--output-file", dest="output_file", help="Output File")
-        parser.add_argument(
-            "-L",
-            "--log",
-            dest="log_level",
-            choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
-            help="logging level",
-        )
-        self.parsed_args, self.salt_args = parser.parse_known_args()
-        console.print(self.parsed_args)
-        console.print(self.salt_args)
+        self._load_taskmans()
 
     def _load_config(self) -> None:
         """
         load the config file from either the location given by the user,
         or load from default path in .config
+
+        TODO: this needs to be part of a config class.
         """
-        if self.parsed_args.config is not None:
-            self.config_path = Path(self.parsed_args.config)
+        if self.parsed.parsed_args.config is not None:
+            self.config_path = Path(self.parsed.parsed_args.config)
         else:
             self.config_path = Path("~/.config/guajillo/config.toml")
         path = self.config_path.expanduser()
@@ -108,7 +73,13 @@ class App:
             level=self.config["logging"]["log_level"],
             format=FORMAT,
             datefmt="[%X]",
-            handlers=[RichHandler(markup=True)],
+            handlers=[
+                RichHandler(
+                    console=stderr_console,
+                    markup=True,
+                    rich_tracebacks=True,
+                )
+            ],
         )
         log.info("Rich logging loaded")
 
@@ -120,19 +91,32 @@ class App:
             "logging": {"log_level": "WARNING"},
         }
         defaults.update(self.config)
-        if self.parsed_args.log_level is not None:
-            defaults.update({"logging": {"log_level": self.parsed_args.log_level}})
+        if self.parsed.parsed_args.log_level is not None:
+            defaults.update(
+                {"logging": {"log_level": self.parsed.parsed_args.log_level}}
+            )
         self.config = defaults
 
-    def _load_client(self):
-        self.client = Guajillo(self.config["netapi"]["url"])
+    def _load_taskmans(self):
+        self.client = Guajillo(
+            self.config["netapi"]["url"], self.parsed, self.config, console=self.console
+        )
+        self.outputs = Outputs(self.console, parser=self.parsed, config=self.config)
 
     async def run(self):
         """
         Run the bloody thing
         """
-        username = self.config["netapi"]["username"]
-        password = self.config["netapi"]["password"]
-        auth = self.config["netapi"]["auth"]
-        login_info = await self.client.login(username, password, auth)
-        self.console.print_json(json.dumps(login_info["return"][0]))
+        try:
+            async_comms = {
+                "lock": asyncio.Lock(),
+                "update": asyncio.Event(),
+                "cond": asyncio.Condition(),
+                "events": {},
+            }
+            log.debug("starting Tasks, client and output")
+            async with asyncio.TaskGroup() as tg:
+                tg.create_task(self.client.taskMan(async_comms))
+                tg.create_task(self.outputs.taskMan(async_comms))
+        except* TerminateTaskGroup:
+            pass

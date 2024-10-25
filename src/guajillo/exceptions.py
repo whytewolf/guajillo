@@ -9,3 +9,7 @@ class GuajilloAuthException(Exception):
 
 class GuajilloException(Exception):
     pass
+
+
+class TerminateTaskGroup(Exception):
+    pass

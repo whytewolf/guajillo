@@ -23,8 +23,9 @@ class Outputs:
             log.debug("awaiting Event update")
             await self.async_comms["update"].wait()
             log.debug("recieved event update")
-            output = list(self.async_comms["events"].keys())[0]
-            await getattr(self, output)(self.async_comms["events"][output])
+            while len(self.async_comms["events"]) > 0:
+                output = self.async_comms["events"].pop()
+                await getattr(self, output["meta"]["output"])(output["output"])
         except Exception:
-            self.console.print_exception(show_locals=False)
+            self.console.print_exception(show_locals=self.config["debug"])
             raise TerminateTaskGroup()

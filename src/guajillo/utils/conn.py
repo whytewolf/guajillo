@@ -178,11 +178,21 @@ class Guajillo:
                 if self._protocol.lower() == "salt-run":
                     output = await self.runner()
 
-                self.async_comms["events"].update({"json": json.dumps(output)})
-                self.async_comms["update"].set()
+                output_event = {
+                    "meta": {"output": "json", "step": "final"},
+                    "output": json.dumps(output),
+                }
             else:
-                self.async_comms["events"].update({"json": json.dumps(login_response)})
-                self.async_comms["update"].set()
+                output_event = {
+                    "meta": {
+                        "output": "json",
+                        "step": "final",
+                    },
+                    "output": json.dumps(login_response),
+                }
+
+            self.async_comms["events"].append(output_event)
+            self.async_comms["update"].set()
         except Exception:
-            self.console.print_exception(show_locals=False)
+            self.console.print_exception(show_locals=self.config["debug"])
             raise TerminateTaskGroup()

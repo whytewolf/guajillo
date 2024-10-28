@@ -7,6 +7,7 @@ import logging
 import sys
 import tomllib
 from pathlib import Path
+from typing import Any
 
 from rich.logging import RichHandler
 from rich.traceback import install
@@ -87,14 +88,19 @@ class App:
         """
         TODO: move this into the config class when a config class exists.
         """
-        defaults = {
+        defaults: dict["str", Any] = {
             "logging": {"log_level": "WARNING"},
         }
+        debug = False
         defaults.update(self.config)
         if self.parsed.parsed_args.log_level is not None:
+            debug = self.parsed.parsed_args.log_level in ["DEBUG"]
             defaults.update(
-                {"logging": {"log_level": self.parsed.parsed_args.log_level}}
+                {
+                    "logging": {"log_level": self.parsed.parsed_args.log_level},
+                }
             )
+        defaults.update({"debug": debug})
         self.config = defaults
 
     def _load_taskmans(self):
@@ -112,7 +118,7 @@ class App:
                 "lock": asyncio.Lock(),
                 "update": asyncio.Event(),
                 "cond": asyncio.Condition(),
-                "events": {},
+                "events": [],
             }
             log.debug("starting Tasks, client and output")
             async with asyncio.TaskGroup() as tg:

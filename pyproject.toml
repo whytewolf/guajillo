@@ -1,13 +1,13 @@
 [project]
 name = "guajillo"
 dynamic = ["version"]
-description = "a new salt-api python cli and library"
+description = "a new salt-api cli interface"
 authors = [{ name = "Thomas Phipps", email = "oldtiredbastard@gmail.com" }]
 dependencies = [
-  "httpx[http2]>=0.27.2",
   "rich>=13.9.2",
   "httpx[brotli]>=0.27.2",
   "httpx[zstd]>=0.27.2",
+  "httpx[http2]>=0.27.2",
   "tomli>=2.0.2",
 ]
 requires-python = ">=3.12"

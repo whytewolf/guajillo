@@ -6,7 +6,12 @@ import guajillo.app as app
 
 install(show_locals=False)
 
-if __name__ == "__main__":
+
+def main():
     theapp = app.App()
     theapp.setup()
     asyncio.run(theapp.run())
+
+
+if __name__ == "__main__":
+    main()

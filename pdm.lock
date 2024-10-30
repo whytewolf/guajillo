@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:66f7d23d06e14ae8ec5ab7e6fa438406387fac5700a601aa3ca9f2943396db61"
+content_hash = "sha256:57109d191fe25b523215362b75a3c128b88bf41b9f9dc9a8aead2aab84489ee9"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -524,6 +524,20 @@ files = [
 ]
 
 [[package]]
+name = "pdm-backend"
+version = "2.4.3"
+requires_python = ">=3.8"
+summary = "The build backend used by PDM that supports latest packaging standards"
+groups = ["dev"]
+dependencies = [
+    "importlib-metadata>=3.6; python_version < \"3.10\"",
+]
+files = [
+    {file = "pdm_backend-2.4.3-py3-none-any.whl", hash = "sha256:07c7e7ae9dc7bbaf9a470e8d2cc59e987bf2897c2f27a7efbde8f1534c0ea4ee"},
+    {file = "pdm_backend-2.4.3.tar.gz", hash = "sha256:dbd9047a7ac10d11a5227e97163b617ad5d665050476ff63867d971758200728"},
+]
+
+[[package]]
 name = "platformdirs"
 version = "4.3.6"
 requires_python = ">=3.8"
@@ -607,7 +621,7 @@ files = [
 
 [[package]]
 name = "pytest-httpx"
-version = "0.32.0"
+version = "0.33.0"
 requires_python = ">=3.9"
 summary = "Send responses to httpx."
 groups = ["dev"]
@@ -616,8 +630,8 @@ dependencies = [
     "pytest==8.*",
 ]
 files = [
-    {file = "pytest_httpx-0.32.0-py3-none-any.whl", hash = "sha256:685d93ce5e5edb5e52310b72342cdc190bebf83aab058328943dd8bd8f6ac790"},
-    {file = "pytest_httpx-0.32.0.tar.gz", hash = "sha256:7807647e8254e5cff79bf2041ae272449ce915d3cf1bbecaa581c384163adb87"},
+    {file = "pytest_httpx-0.33.0-py3-none-any.whl", hash = "sha256:bdd1b00a846cfe857194e4d3ba72dc08ba0d163154a4404269c9b971f357c05d"},
+    {file = "pytest_httpx-0.33.0.tar.gz", hash = "sha256:4af9ab0dae5e9c14cb1e27d18af3db1f627b2cf3b11c02b34ddf26aff6b0a24c"},
 ]
 
 [[package]]

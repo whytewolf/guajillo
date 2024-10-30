@@ -118,7 +118,14 @@ class App:
                 "lock": asyncio.Lock(),
                 "update": asyncio.Event(),
                 "cond": asyncio.Condition(),
-                "events": [],
+                "events": [
+                    {
+                        "meta": {
+                            "output": None,
+                            "step": "startup",
+                        }
+                    }
+                ],
             }
             log.debug("starting Tasks, client and output")
             async with asyncio.TaskGroup() as tg:

@@ -1,6 +1,6 @@
 [project]
 name = "guajillo"
-version = "0.1.0"
+dynamic = ["version"]
 description = "a new salt-api python cli and library"
 authors = [{ name = "Thomas Phipps", email = "oldtiredbastard@gmail.com" }]
 dependencies = [
@@ -14,23 +14,29 @@ requires-python = ">=3.12"
 readme = "README.md"
 license = { text = "MIT" }
 
+[project.scripts]
+guajillo = "guajillo.main:main"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
-
 [tool.pdm]
 distribution = true
 
+[tool.pdm.version]
+source = "scm"
+
 [tool.pdm.dev-dependencies]
 dev = [
-    "pytest-httpx>=0.32.0",
-    "pytest>=8.3.3",
-    "coverage>=7.6.1",
-    "coverage[toml]>=7.6.1",
-    "pre-commit>=4.0.1",
-    "mypy>=1.11.2",
-    "bandit>=1.7.10",
+  "pytest-httpx>=0.32.0",
+  "pytest>=8.3.3",
+  "coverage>=7.6.1",
+  "coverage[toml]>=7.6.1",
+  "pre-commit>=4.0.1",
+  "mypy>=1.11.2",
+  "bandit>=1.7.10",
+  "pdm-backend>=2.4.3",
 ]
 
 [tool.ruff.format]

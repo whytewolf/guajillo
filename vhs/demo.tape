@@ -1,6 +1,4 @@
 Set Shell zsh
-Type "`pdm venv activate`"
-Enter
 Sleep 5ms
 Type "guajillo salt '*' test.ping"
 Enter

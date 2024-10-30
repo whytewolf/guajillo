@@ -1,6 +1,6 @@
 # guajillo
 
-![Image of guajillo running](images/function.png)
+![Image of guajillo running](images/demo.gif)
 
 This is a project in motion currently.
 

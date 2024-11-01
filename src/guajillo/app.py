@@ -25,14 +25,15 @@ log = logging.getLogger(__name__)
 class App:
     def __init__(self) -> None:
         self.console = console
-        self.parsed = CliParse()
+        self.stderr = stderr_console
+        self.parsed = CliParse(self.stderr)
         install(show_locals=False)
         """
         FIX: This should not be a part of init. make a setup class. pass results into init
         """
 
     def setup(self) -> None:
-        self.parsed.build_args()
+        self.parsed.build_args(sys.argv[1:])
         self._load_config()
         self._validate_config()
         self._setup_logging()
@@ -76,7 +77,7 @@ class App:
             datefmt="[%X]",
             handlers=[
                 RichHandler(
-                    console=stderr_console,
+                    console=self.stderr,
                     markup=True,
                     rich_tracebacks=True,
                 )

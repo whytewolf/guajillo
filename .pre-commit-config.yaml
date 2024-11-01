@@ -40,10 +40,11 @@ repos:
     hooks:
       - id: mypy
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.21.1
+    rev: v8.21.2
     hooks:
       - id: gitleaks
   - repo: https://github.com/PyCQA/bandit
     rev: "1.7.10"
     hooks:
       - id: bandit
+        args: ["-c", "pyproject.toml", "--recursive"]

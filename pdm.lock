@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:57109d191fe25b523215362b75a3c128b88bf41b9f9dc9a8aead2aab84489ee9"
+content_hash = "sha256:e36692b9941c45757b8772ce1498952ac00e87f962caee1422ab276e5f77f5d0"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -617,6 +617,35 @@ dependencies = [
 files = [
     {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
     {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
+]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.24.0"
+requires_python = ">=3.8"
+summary = "Pytest support for asyncio"
+groups = ["dev"]
+dependencies = [
+    "pytest<9,>=8.2",
+]
+files = [
+    {file = "pytest_asyncio-0.24.0-py3-none-any.whl", hash = "sha256:a811296ed596b69bf0b6f3dc40f83bcaf341b155a269052d82efa2b25ac7037b"},
+    {file = "pytest_asyncio-0.24.0.tar.gz", hash = "sha256:d081d828e576d85f875399194281e92bf8a68d60d72d1a2faf2feddb6c46b276"},
+]
+
+[[package]]
+name = "pytest-cov"
+version = "6.0.0"
+requires_python = ">=3.9"
+summary = "Pytest plugin for measuring coverage."
+groups = ["dev"]
+dependencies = [
+    "coverage[toml]>=7.5",
+    "pytest>=4.6",
+]
+files = [
+    {file = "pytest-cov-6.0.0.tar.gz", hash = "sha256:fde0b595ca248bb8e2d76f020b465f3b107c9632e6a1d1705f17834c89dcadc0"},
+    {file = "pytest_cov-6.0.0-py3-none-any.whl", hash = "sha256:eee6f1b9e61008bd34975a4d5bab25801eb31898b032dd55addc93e96fcaaa35"},
 ]
 
 [[package]]

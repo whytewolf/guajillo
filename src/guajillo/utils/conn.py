@@ -172,7 +172,7 @@ class Guajillo:
         try:
             log.info("Starting Client Task Manager")
             self.async_comms = async_comms
-            login_response = await self.login()
+            output = await self.login()
             if len(self.parser.salt_args) > 0:
                 params = self._make_params()
                 output = await self.call(params)
@@ -181,24 +181,24 @@ class Guajillo:
                     "meta": {"output": "json", "step": "normal"},
                     "output": output,
                 }
+                if "tag" in output["return"][0]:
+                    job_type = "master"
+                    jid = output["return"][0]["jid"]
+                else:
+                    job_type = "minion"
+                    jid = output["return"][0]["jid"]
             else:
                 output_event = {
                     "meta": {
                         "output": "json",
                         "step": "final",
                     },
-                    "output": login_response,
+                    "output": output,
                 }
                 self.async_comms["events"].append(output_event)
                 self.async_comms["update"].set()
             ttl = self.parser.parsed_args.timeout
-            if "tag" in output["return"][0]:
-                job_type = "master"
-                jid = output["return"][0]["jid"]
-            else:
-                job_type = "minion"
-                jid = output["return"][0]["jid"]
-
+            # TODO: This needs to be split into its own function
             while output_event["meta"]["step"] != "final":
                 step = "normal"
                 output = "status"

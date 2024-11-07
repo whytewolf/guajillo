@@ -120,6 +120,13 @@ class CliParse:
             "",
         )
         options.add_row(
+            "-t",
+            "--timeout",
+            "TIMEOUT",
+            "timeout for internal operations",
+            "30",
+        )
+        options.add_row(
             "-L",
             "--log",
             "{[bold red]CRITICAL[/bold red],[red]ERROR[/red],[yellow]WARNING[/yellow],[blue]INFO[/blue],[green]DEBUG[/green]}",

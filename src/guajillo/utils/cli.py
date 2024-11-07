@@ -14,7 +14,6 @@ class CliParse:
             description="a program for interacting with salt from any terminal window",
             epilog="Copyright 2024 Thomas Phipps",
             add_help=False,
-            exit_on_error=False,
         )
         self.console = console
 
@@ -54,12 +53,20 @@ class CliParse:
             choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
             help="logging level",
         )
+        self.parser.add_argument(
+            "-t",
+            "--timeout",
+            type=int,
+            default=30,
+            help="timeout for internal operations",
+        )
         self.parser.add_argument("-h", "--help", action="store_true")
+
         self.parsed_args, self.salt_args = self.parser.parse_known_args(args)
         if self.parsed_args.help:
             self.help()
 
-    def help(self):
+    def help(self, doexit: bool = True):
         """
         display help txt
         """
@@ -120,4 +127,7 @@ class CliParse:
             "WARNING",
         )
         self.console.print(options)
-        sys.exit()
+
+        self.console.print("\n\n[bold]Copyright:copyright: 2024 Thomas Phipps[/bold]\n")
+        if doexit:
+            sys.exit()

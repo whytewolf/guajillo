@@ -1,8 +1,10 @@
+import asyncio
 import json
 import logging
 from typing import Any
 
-from httpx import URL, AsyncClient, Cookies, Headers
+from httpx import URL, AsyncClient, Cookies, Headers, ReadError
+from httpx_sse import aconnect_sse
 from rich.console import Console
 
 from guajillo.exceptions import GuajilloException, TerminateTaskGroup
@@ -38,6 +40,77 @@ class Guajillo:
         self.parser = parser
         self.config = config
         self.console = console
+        self.authed = False
+
+    def _get_target_type(self, target_type_abbrv: str) -> str:
+        tgts = {
+            "-C": "compound",
+            "-E": "pcre",
+            "-P": "grain_pcre",
+            "-G": "grain",
+            "-L": "list",
+            "-I": "pillar",
+            "-J": "pillar_pcre",
+            "-S": "ipcidr",
+            "-R": "range",
+            "-N": "nodegroup",
+        }
+        if target_type_abbrv in tgts:
+            return tgts[target_type_abbrv]
+        raise GuajilloException("Unknown Target Type")
+
+    def _make_params(self):
+        salt_args = self.parser.salt_args
+        params = {}
+        protocol = salt_args.pop(0)
+        if protocol.lower() in ["salt", "salt-call"]:
+            if salt_args[0].startswith("-"):
+                tgt_type = self._get_target_type(salt_args.pop(0))
+                target = salt_args.pop(0)
+            else:
+                tgt_type = "glob"
+                target = salt_args.pop(0)
+            params = {
+                "client": "local_async",
+                "tgt": target,
+                "tgt_type": tgt_type,
+            }
+
+        if protocol.lower() == "salt-run":
+            params = {"client": "runner_async"}
+
+        if protocol.lower() == "salt-wheel":
+            params = {"client": "wheel_async"}
+        if params == {}:
+            raise GuajilloException("Unknown salt protocol")
+
+        fun = salt_args.pop(0)
+        args = []
+        kwargs = {}
+        for index, value in enumerate(salt_args):
+            if "=" in value:
+                svalue = value.split("=")
+                try:
+                    rendered = json.loads(svalue[1])
+                except ValueError:
+                    log.debug("json rendering failed, useing str")
+                    rendered = svalue[1]
+                kwargs.update({svalue[0]: rendered})
+            else:
+                try:
+                    rendered = json.loads(value)
+                except ValueError:
+                    rendered = value
+                args.append(rendered)
+
+        params.update(
+            {
+                "fun": fun,
+                "arg": args,
+                "kwarg": kwargs,
+            }
+        )
+        return [params]
 
     async def login(self):
         profile = self.config[self.parser.parsed_args.profile]
@@ -59,60 +132,15 @@ class Guajillo:
             timeout=30,
         )
         response = await self.client.send(request)
-        if response.status_code != 200:
+        if response.status_code not in [200, 401]:
             response.raise_for_status()
+        if response.status_code == 401:
+            self.authed = False
+            return '{"Status": "Unable to authorize connection"}'
+        self.authed = True
         return response.json()
 
-    def _get_target_type(self, target_type_abbrv: str) -> str:
-        tgts = {
-            "-C": "compound",
-            "-E": "pcre",
-            "-P": "grain_pcre",
-            "-G": "grain",
-            "-L": "list",
-            "-I": "pillar",
-            "-J": "pillar_pcre",
-            "-S": "ipcidr",
-            "-R": "range",
-            "-N": "nodegroup",
-        }
-        if target_type_abbrv in tgts:
-            return tgts[target_type_abbrv]
-        raise GuajilloException("Unknown Target Type")
-
-    async def cmd(self):
-        salt_args = self.parser.salt_args
-        if salt_args[0].startswith("-"):
-            tgt_type = self._get_target_type(salt_args.pop(0))
-            target = salt_args.pop(0)
-        else:
-            tgt_type = "glob"
-            target = salt_args.pop(0)
-        fun = self.parser.salt_args.pop(0)
-        args = []
-        kwargs = {}
-        for index, value in enumerate(self.parser.salt_args):
-            if "=" in value:
-                svalue = value.split("=")
-                try:
-                    rendered = json.loads(svalue[1])
-                except ValueError:
-                    log.debug("json rendering failed, useing str")
-                    rendered = svalue[1]
-                kwargs.update({svalue[0]: rendered})
-            else:
-                args.append(value)
-
-        params = [
-            {
-                "client": "local",
-                "tgt": target,
-                "tgt_type": tgt_type,
-                "fun": fun,
-                "arg": args,
-                "kwarg": kwargs,
-            }
-        ]
+    async def call(self, params=list[dict[str, str]]):
         request = self.client.build_request(
             "POST",
             self.url,
@@ -121,66 +149,37 @@ class Guajillo:
             json=params,
             timeout=30,
         )
+        log.debug(f"sending {params} to {self.url}")
         response = await self.client.send(request)
-        if response.status_code != 200:
-            response.raise_for_status()
         return response.json()
 
-    async def runner(self):
-        fun = self.parser.salt_args.pop(0)
-        args = []
-        kwargs = {}
-        for index, value in enumerate(self.parser.salt_args):
-            if "=" in value:
-                svalue = value.split("=")
-                log.debug(f"json loading: {svalue[1]} of type: {type(svalue[1])}")
-                try:
-                    rendered = json.loads(svalue[1])
-                except ValueError:
-                    log.debug("json rendering failed, useing str")
-                    rendered = svalue[1]
-                kwargs.update({svalue[0]: rendered})
-            else:
-                args.append(value)
-
-        params = [
-            {
-                "client": "runner",
-                "fun": fun,
-                "arg": args,
-                "kwarg": kwargs,
-            }
-        ]
+    async def job_lookup(self, jid: str):
+        url = f"{self.url}/jobs/{jid}"
         request = self.client.build_request(
-            "POST",
-            self.url,
+            "GET",
+            url,
             headers=self.headers,
             cookies=self.cookies,
-            json=params,
             timeout=30,
         )
         response = await self.client.send(request)
-        if response.status_code != 200:
-            response.raise_for_status()
-        return response.json()
+        return response
 
     async def taskMan(self, async_comms: dict["str", Any]) -> None:
         """
         async controller for salt-API client.
         """
         try:
+            log.info("Starting Client Task Manager")
             self.async_comms = async_comms
             login_response = await self.login()
             if len(self.parser.salt_args) > 0:
-                self._protocol = self.parser.salt_args.pop(0)
-                if self._protocol.lower() in ["salt", "salt-call"]:
-                    output = await self.cmd()
-                if self._protocol.lower() == "salt-run":
-                    output = await self.runner()
+                params = self._make_params()
+                output = await self.call(params)
 
                 output_event = {
-                    "meta": {"output": "json", "step": "final"},
-                    "output": json.dumps(output),
+                    "meta": {"output": "json", "step": "normal"},
+                    "output": output,
                 }
             else:
                 output_event = {
@@ -188,11 +187,78 @@ class Guajillo:
                         "output": "json",
                         "step": "final",
                     },
-                    "output": json.dumps(login_response),
+                    "output": login_response,
                 }
+                self.async_comms["events"].append(output_event)
+                self.async_comms["update"].set()
+            ttl = self.parser.parsed_args.timeout
+            if "tag" in output["return"][0]:
+                job_type = "master"
+                jid = output["return"][0]["jid"]
+            else:
+                job_type = "minion"
+                jid = output["return"][0]["jid"]
 
-            self.async_comms["events"].append(output_event)
-            self.async_comms["update"].set()
+            while output_event["meta"]["step"] != "final":
+                step = "normal"
+                output = "status"
+                if ttl == 0:
+                    step = "final"
+                    output = "json"
+                response = await self.job_lookup(jid)
+                log.debug(f"waiting on jid: {jid}")
+                event = response.json()
+                if job_type == "master" and "Error" not in event["info"][0]:
+                    step = "final"
+                    output = "json"
+                elif job_type == "minion" and len(event["info"][0]["Minions"]) <= len(
+                    event["return"][0]
+                ):
+                    step = "final"
+                    output = "json"
+                    event = {"return": event["return"]}
+
+                output_event = {
+                    "meta": {"output": output, "step": step},
+                    "output": event,
+                }
+                self.async_comms["events"].append(output_event)
+                self.async_comms["update"].set()
+                ttl -= 1
+                await asyncio.sleep(0.5)
+
+            await self.client.aclose()
         except Exception:
             self.console.print_exception(show_locals=self.config["debug"])
             raise TerminateTaskGroup()
+
+    async def streamMon(self) -> None:
+        """
+        async event stream monitoring controller
+        """
+        try:
+            log.info("Starting Client Stream Monitor")
+            await asyncio.sleep(0.5)
+            while self.authed is False:
+                await asyncio.sleep(0.5)
+                log.debug("waiting for token")
+                continue
+            url = f"{self.url}/events"
+            try:
+                if not self.client.is_closed:
+                    async with aconnect_sse(
+                        self.client, "GET", url, timeout=1024
+                    ) as event_source:
+                        async for sse in event_source.aiter_sse():
+                            log.debug(sse)
+            except ReadError as re:
+                log.debug(re)
+            except RuntimeError as re:
+                log.debug(re)
+
+        except Exception:
+            self.console.print_exception(show_locals=self.config["debug"])
+            raise TerminateTaskGroup()
+
+    async def close(self):
+        await self.client.aclose()

@@ -1,6 +1,6 @@
 Set Shell zsh
 Sleep 5ms
-Type "guajillo salt '*' test.ping"
+Type "guajillo -t 10 salt '*' test.ping"
 Enter
-Sleep 6.5s
+Sleep 35s
 Ctrl+D

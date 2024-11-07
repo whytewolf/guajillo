@@ -127,10 +127,12 @@ class App:
                         }
                     }
                 ],
+                "done": False,
             }
-            log.debug("starting Tasks, client and output")
+            log.info("Starting Tasks managers")
             async with asyncio.TaskGroup() as tg:
                 tg.create_task(self.client.taskMan(async_comms))
                 tg.create_task(self.outputs.taskMan(async_comms))
+                tg.create_task(self.client.streamMon())
         except* TerminateTaskGroup:
-            pass
+            await self.client.close()

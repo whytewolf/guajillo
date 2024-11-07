@@ -9,6 +9,7 @@ dependencies = [
   "httpx[zstd]>=0.27.2",
   "httpx[http2]>=0.27.2",
   "tomli>=2.0.2",
+  "httpx-sse>=0.4.0",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -29,16 +30,16 @@ source = "scm"
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "pytest-httpx>=0.32.0",
-    "pytest>=8.3.3",
-    "coverage>=7.6.1",
-    "coverage[toml]>=7.6.1",
-    "pre-commit>=4.0.1",
-    "mypy>=1.11.2",
-    "bandit>=1.7.10",
-    "pdm-backend>=2.4.3",
-    "pytest-asyncio>=0.24.0",
-    "pytest-cov>=6.0.0",
+  "pytest-httpx>=0.32.0",
+  "pytest>=8.3.3",
+  "coverage>=7.6.1",
+  "coverage[toml]>=7.6.1",
+  "pre-commit>=4.0.1",
+  "mypy>=1.11.2",
+  "bandit>=1.7.10",
+  "pdm-backend>=2.4.3",
+  "pytest-asyncio>=0.24.0",
+  "pytest-cov>=6.0.0",
 ]
 
 [tool.ruff.format]
@@ -50,3 +51,4 @@ exclude_dirs = ["tests", ".venv"]
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+markers = ["buildargs_data: pass data to buildargs fixture"]

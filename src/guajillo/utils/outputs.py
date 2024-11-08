@@ -23,14 +23,22 @@ class Outputs:
         self.console.print_json(json.dumps(event))
 
     async def status(self, event: dict[str, Any]) -> None:
-        queued = ""
-        #        await self.json(event)
         if "Minions" in event["info"][0]:
             queued = f"{len(list(event['return'][0].keys()))}/{len(event["info"][0]["Minions"])}"
             msg = f"{queued} returned from jid: {event['info'][0]['jid']}"
         if "Error" in event["info"][0]:
             msg = f"waiting on master for jid: {event['info'][0]['jid']}"
         self.cstatus.update(msg)
+
+    async def boolean(self, event: dict[str, Any]) -> None:
+        output = event["return"][0]
+        items = event["info"][0]["Minions"]
+        returned = [f"[green]✔[/green] {x}" for x in items if x in output]
+        nonreturned = [f"[red]✘[/red] {x}" for x in items if x not in output]
+        for item in returned:
+            self.console.print(item)
+        for item in nonreturned:
+            self.console.print(item)
 
     async def taskMan(self, async_comms: dict[str, Any]) -> None:
         try:

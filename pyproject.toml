@@ -15,6 +15,11 @@ requires-python = ">=3.12"
 readme = "README.md"
 license = { text = "MIT" }
 
+[project.urls]
+Homepage = "https://github.com/whytewolf/guajillo"
+Issues = "https://github.com/whytewolf/guajillo/issues"
+Repository = "https://github.com/whytewolf/guajillo"
+
 [project.scripts]
 guajillo = "guajillo.main:main"
 
@@ -41,9 +46,6 @@ dev = [
   "pytest-asyncio>=0.24.0",
   "pytest-cov>=6.0.0",
 ]
-
-[tool.ruff]
-src = ["src"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -165,6 +165,16 @@ class Guajillo:
         response = await self.client.send(request)
         return response
 
+    async def check_outputer(self, fun: str) -> str:
+        defined_outputers = {
+            "test.ping": "boolean",
+        }
+        if self.parser.parsed_args.output is not None:
+            return self.parser.parsed_args.output
+        if fun in defined_outputers:
+            return defined_outputers[fun]
+        return "json"
+
     async def taskMan(self, async_comms: dict["str", Any]) -> None:
         """
         async controller for salt-API client.
@@ -206,19 +216,20 @@ class Guajillo:
                 output = "status"
                 if ttl == 0:
                     step = "final"
-                    output = "json"
+                    output = await self.check_outputer(
+                        output_event["output"]["info"][0]["Function"]
+                    )
                 response = await self.job_lookup(jid)
                 log.debug(f"waiting on jid: {jid}")
                 event = response.json()
                 if job_type == "master" and "Error" not in event["info"][0]:
                     step = "final"
-                    output = "json"
+                    output = await self.check_outputer(event["info"][0]["Function"])
                 elif job_type == "minion" and len(event["info"][0]["Minions"]) <= len(
                     event["return"][0]
                 ):
                     step = "final"
-                    output = "json"
-                    event = {"return": event["return"]}
+                    output = await self.check_outputer(event["info"][0]["Function"])
 
                 output_event = {
                     "meta": {"output": output, "step": step},

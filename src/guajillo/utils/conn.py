@@ -199,6 +199,8 @@ class Guajillo:
                 self.async_comms["update"].set()
             ttl = self.parser.parsed_args.timeout
             # TODO: This needs to be split into its own function
+
+            # TODO: use streamMon as a way to tell if we need to check the job
             while output_event["meta"]["step"] != "final":
                 step = "normal"
                 output = "status"

@@ -42,6 +42,9 @@ dev = [
   "pytest-cov>=6.0.0",
 ]
 
+[tool.ruff]
+src = ["src"]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"

@@ -123,7 +123,7 @@ class CliParse:
             "-t",
             "--timeout",
             "TIMEOUT",
-            "timeout for internal operations",
+            "timeout for internal operations, loops to fetch",
             "30",
         )
         options.add_row(
@@ -135,6 +135,6 @@ class CliParse:
         )
         self.console.print(options)
 
-        self.console.print("\n\n[bold]Copyright:copyright: 2024 Thomas Phipps[/bold]\n")
+        self.console.print("\n[bold]Copyright:copyright: 2024 Thomas Phipps[/bold]\n")
         if doexit:
             sys.exit()

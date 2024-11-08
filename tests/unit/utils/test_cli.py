@@ -86,7 +86,46 @@ def test_help():
     with output.capture() as capture:
         testing = CliParse(output)
         testing.help(doexit=False)
-    expected = "usage: guajillo [-h] [-c CONFIG] [-p PROFILE] [-o OUTPUT] [--out-list] \n[--output-file OUTPUT_FILE] [-L {CRITICAL,ERROR,WARNING,INFO,DEBUG}] [SALT \ncommands]\n\nA CLI program for interacting with the salt-api with better output\n\n                                    Options                                     \n┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓\n┃ Short ┃ Long          ┃ option name     ┃ description      ┃ default         ┃\n┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩\n│ -h    │ --help        │                 │ Show this help   │                 │\n│       │               │                 │ and exit         │                 │\n│ -c    │ --config      │ CONFIG          │ Config file      │ ~/.config/guaj… │\n│       │               │                 │ location         │                 │\n│ -p    │ --profile     │ PROFILE         │ Profile from     │ netapi          │\n│       │               │                 │ config file to   │                 │\n│       │               │                 │ use as login     │                 │\n│       │               │                 │ info             │                 │\n│ -o    │ --out         │ OUTPUT          │ currently not    │ auto            │\n│       │               │                 │ used, but will   │                 │\n│       │               │                 │ let uses force   │                 │\n│       │               │                 │ output style     │                 │\n│       │ --out-list    │                 │ list known       │                 │\n│       │               │                 │ output types,    │                 │\n│       │               │                 │ currently not    │                 │\n│       │               │                 │ implimented      │                 │\n│       │ --output-file │ OUTPUT_FILE     │ Not implimented, │                 │\n│       │               │                 │ output file to   │                 │\n│       │               │                 │ dump output to   │                 │\n│ -t    │ --timeout     │ TIMEOUT         │ timeout for      │ 30              │\n│       │               │                 │ internal         │                 │\n│       │               │                 │ operations       │                 │\n│ -L    │ --log         │ {CRITICAL,ERRO… │ console log      │ WARNING         │\n│       │               │                 │ level            │                 │\n└───────┴───────────────┴─────────────────┴──────────────────┴─────────────────┘\n\n\nCopyright© 2024 Thomas Phipps\n\n"
+    expected = """usage: guajillo [-h] [-c CONFIG] [-p PROFILE] [-o OUTPUT] [--out-list] 
+[--output-file OUTPUT_FILE] [-L {CRITICAL,ERROR,WARNING,INFO,DEBUG}] [SALT 
+commands]
+
+A CLI program for interacting with the salt-api with better output
+
+                                    Options                                     
+┏━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Short ┃ Long          ┃ option name     ┃ description      ┃ default         ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ -h    │ --help        │                 │ Show this help   │                 │
+│       │               │                 │ and exit         │                 │
+│ -c    │ --config      │ CONFIG          │ Config file      │ ~/.config/guaj… │
+│       │               │                 │ location         │                 │
+│ -p    │ --profile     │ PROFILE         │ Profile from     │ netapi          │
+│       │               │                 │ config file to   │                 │
+│       │               │                 │ use as login     │                 │
+│       │               │                 │ info             │                 │
+│ -o    │ --out         │ OUTPUT          │ currently not    │ auto            │
+│       │               │                 │ used, but will   │                 │
+│       │               │                 │ let uses force   │                 │
+│       │               │                 │ output style     │                 │
+│       │ --out-list    │                 │ list known       │                 │
+│       │               │                 │ output types,    │                 │
+│       │               │                 │ currently not    │                 │
+│       │               │                 │ implimented      │                 │
+│       │ --output-file │ OUTPUT_FILE     │ Not implimented, │                 │
+│       │               │                 │ output file to   │                 │
+│       │               │                 │ dump output to   │                 │
+│ -t    │ --timeout     │ TIMEOUT         │ timeout for      │ 30              │
+│       │               │                 │ internal         │                 │
+│       │               │                 │ operations,      │                 │
+│       │               │                 │ loops to fetch   │                 │
+│ -L    │ --log         │ {CRITICAL,ERRO… │ console log      │ WARNING         │
+│       │               │                 │ level            │                 │
+└───────┴───────────────┴─────────────────┴──────────────────┴─────────────────┘
+
+Copyright© 2024 Thomas Phipps
+
+"""
     assert capture.get() == expected
     with pytest.raises(SystemExit) as excinfo:
         testing.build_args(["-h"])

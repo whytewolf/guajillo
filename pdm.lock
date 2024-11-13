@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:d66fbbecb79321c16eb3f57eea730699e34da554e006e5423ec3e563bfe1c31d"
+content_hash = "sha256:00a2a1a029740db4fad19d60655737cb1aa18eb900ddc7c2952a916f4e80d7d1"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -679,7 +679,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["dev"]
+groups = ["default", "dev"]
 files = [
     {file = "PyYAML-6.0.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:c70c95198c015b85feafc136515252a261a84561b7b1d51e3384e0655ddf25ab"},
     {file = "PyYAML-6.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:ce826d6ef20b1bc864f0a68340c8b3287705cae2f8b4b1d932177dcc76721725"},
@@ -745,13 +745,24 @@ files = [
 
 [[package]]
 name = "tomli"
-version = "2.0.2"
+version = "2.1.0"
 requires_python = ">=3.8"
 summary = "A lil' TOML parser"
 groups = ["default"]
 files = [
-    {file = "tomli-2.0.2-py3-none-any.whl", hash = "sha256:2ebe24485c53d303f690b0ec092806a085f07af5a5aa1464f3931eec36caaa38"},
-    {file = "tomli-2.0.2.tar.gz", hash = "sha256:d46d457a85337051c36524bc5349dd91b1877838e2979ac5ced3e710ed8a60ed"},
+    {file = "tomli-2.1.0-py3-none-any.whl", hash = "sha256:a5c57c3d1c56f5ccdf89f6523458f60ef716e210fc47c4cfb188c5ba473e0391"},
+    {file = "tomli-2.1.0.tar.gz", hash = "sha256:3f646cae2aec94e17d04973e4249548320197cfabdf130015d023de4b74d8ab8"},
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20240917"
+requires_python = ">=3.8"
+summary = "Typing stubs for PyYAML"
+groups = ["dev"]
+files = [
+    {file = "types-PyYAML-6.0.12.20240917.tar.gz", hash = "sha256:d1405a86f9576682234ef83bcb4e6fff7c9305c8b1fbad5e0bcd4f7dbdc9c587"},
+    {file = "types_PyYAML-6.0.12.20240917-py3-none-any.whl", hash = "sha256:392b267f1c0fe6022952462bf5d6523f31e37f6cea49b14cee7ad634b6301570"},
 ]
 
 [[package]]

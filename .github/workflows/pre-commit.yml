@@ -1,0 +1,20 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: 3.12
+          cache: true
+      - uses: pre-commit/action@v3.0.1
+      - name: Install dependencies
+        run: pdm install

@@ -173,7 +173,7 @@ class Guajillo:
             return self.parser.parsed_args.output
         if fun in defined_outputers:
             return defined_outputers[fun]
-        return "json"
+        return "yaml"
 
     async def taskMan(self, async_comms: dict["str", Any]) -> None:
         """

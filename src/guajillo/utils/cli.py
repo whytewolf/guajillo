@@ -38,16 +38,14 @@ class CliParse:
             "-o",
             "--out",
             dest="output",
+            choices=["json", "yaml", "boolean"],
             help="Output method will auto detect if possable, use this to force or set to json for json output",
-        )
-        self.parser.add_argument(
-            "--out-list", help="list known output methods", action="store_true"
         )
         self.parser.add_argument(
             "--output-file", dest="output_file", help="Output File"
         )
         self.parser.add_argument(
-            "-L",
+            "-l",
             "--log",
             dest="log_level",
             choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
@@ -101,16 +99,9 @@ class CliParse:
         options.add_row(
             "-o",
             "--out",
-            "OUTPUT",
-            "currently not used, but will let uses force output style",
+            "{json, yaml, boolean}",
+            "force output style through a known output",
             "auto",
-        )
-        options.add_row(
-            "",
-            "--out-list",
-            "",
-            "list known output types, currently not implimented",
-            "",
         )
         options.add_row(
             "",
@@ -127,7 +118,7 @@ class CliParse:
             "30",
         )
         options.add_row(
-            "-L",
+            "-l",
             "--log",
             "{[bold red]CRITICAL[/bold red],[red]ERROR[/red],[yellow]WARNING[/yellow],[blue]INFO[/blue],[green]DEBUG[/green]}",
             "console log level",

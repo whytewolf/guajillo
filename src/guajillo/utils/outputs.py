@@ -59,6 +59,9 @@ class Outputs:
             for item in nonreturned:
                 self.console.print(f"[red]✘ {item}[/red]")
 
+    async def string(self, output: str) -> None:
+        self.console.print(output)
+
     async def taskMan(self, async_comms: dict[str, Any]) -> None:
         try:
             log.info("Starting output Task Manager")
@@ -72,6 +75,8 @@ class Outputs:
                     if event["meta"]["step"] == "final":
                         self.cstatus.stop()
                     log.debug(f"calling outputer {event["meta"]["output"]}")
+                    if event["output"]["return"][0] == {}:
+                        await self.string("No known minions matched target")
                     await getattr(self, event["meta"]["output"])(event["output"])
                 await asyncio.sleep(0.5)
             self.async_comms["one"] = True

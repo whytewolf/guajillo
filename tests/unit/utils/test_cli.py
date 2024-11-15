@@ -43,18 +43,6 @@ def test_cli_out_fail():
     assert excinfo.value.code == 2
 
 
-def test_cli_out_list():
-    testing = CliParse()
-    testing.build_args(["--out-list"])
-    assert testing.parsed_args.out_list
-
-
-def test_cli_out_list_default():
-    testing = CliParse()
-    testing.build_args(["-c", "/fake/file"])
-    assert not testing.parsed_args.out_list
-
-
 def test_cli_output_file():
     testing = CliParse()
     testing.build_args(["--output-file", "/fake/file"])
@@ -70,14 +58,14 @@ def test_cli_output_file_fail():
 
 def test_cli_log():
     testing = CliParse()
-    testing.build_args(["-L", "DEBUG"])
+    testing.build_args(["-l", "DEBUG"])
     assert testing.parsed_args.log_level == "DEBUG"
 
 
 def test_cli_log_fail():
     testing = CliParse()
     with pytest.raises(SystemExit) as excinfo:
-        testing.build_args(["-L", "ALL"])
+        testing.build_args(["-l", "ALL"])
     assert excinfo.value.code == 2
 
 
@@ -104,14 +92,9 @@ A CLI program for interacting with the salt-api with better output
 │       │               │                 │ config file to   │                 │
 │       │               │                 │ use as login     │                 │
 │       │               │                 │ info             │                 │
-│ -o    │ --out         │ OUTPUT          │ currently not    │ auto            │
-│       │               │                 │ used, but will   │                 │
-│       │               │                 │ let uses force   │                 │
-│       │               │                 │ output style     │                 │
-│       │ --out-list    │                 │ list known       │                 │
-│       │               │                 │ output types,    │                 │
-│       │               │                 │ currently not    │                 │
-│       │               │                 │ implimented      │                 │
+│ -o    │ --out         │ {json, yaml,    │ force output     │ auto            │
+│       │               │ boolean}        │ style through a  │                 │
+│       │               │                 │ known output     │                 │
 │       │ --output-file │ OUTPUT_FILE     │ Not implimented, │                 │
 │       │               │                 │ output file to   │                 │
 │       │               │                 │ dump output to   │                 │
@@ -119,7 +102,7 @@ A CLI program for interacting with the salt-api with better output
 │       │               │                 │ internal         │                 │
 │       │               │                 │ operations,      │                 │
 │       │               │                 │ loops to fetch   │                 │
-│ -L    │ --log         │ {CRITICAL,ERRO… │ console log      │ WARNING         │
+│ -l    │ --log         │ {CRITICAL,ERRO… │ console log      │ WARNING         │
 │       │               │                 │ level            │                 │
 └───────┴───────────────┴─────────────────┴──────────────────┴─────────────────┘
 
@@ -127,5 +110,5 @@ Copyright© 2024 Thomas Phipps
 
 """
     assert capture.get() == expected
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit):
         testing.build_args(["-h"])

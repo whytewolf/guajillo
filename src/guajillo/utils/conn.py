@@ -194,9 +194,20 @@ class Guajillo:
                 if "tag" in output["return"][0]:
                     job_type = "master"
                     jid = output["return"][0]["jid"]
-                else:
+                elif "jid" in output["return"][0]:
                     job_type = "minion"
                     jid = output["return"][0]["jid"]
+                else:
+                    job_type = "error"
+                    output_event = {
+                        "meta": {
+                            "output": "json",
+                            "step": "final",
+                        },
+                        "output": output,
+                    }
+                    self.async_comms["events"].append(output_event)
+                    self.async_comms["update"].set()
             else:
                 output_event = {
                     "meta": {

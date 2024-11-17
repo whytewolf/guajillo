@@ -7,6 +7,7 @@ import yaml
 from rich.console import Console
 from rich.status import Status
 from rich.syntax import Syntax
+from rich.text import Text
 
 from guajillo.exceptions import TerminateTaskGroup
 
@@ -39,7 +40,7 @@ class Outputs:
 
     async def boolean(self, event: dict[str, Any]) -> None:
         nonreturned = []
-        output = event["return"][0]
+        output = event["info"][0]["Result"]
         if "Minions" in event["info"][0]:
             items = event["info"][0]["Minions"]
             nonreturned = [x for x in items if x not in output]
@@ -62,6 +63,42 @@ class Outputs:
     async def string(self, output: str) -> None:
         self.console.print(output)
 
+    async def highstate(self, event: dict[str, Any]) -> None:
+        nonreturned = []
+        output = event["info"][0]["Result"]
+        if "Minions" in event["info"][0]:
+            items = event["info"][0]["Minions"]
+            nonreturned = [x for x in items if x not in output]
+        for minion, returned in output.items():
+            self.console.rule(f"[bold red]{minion}")
+            for id, results in returned["return"].items():
+                module, id, name, fun = id.split("_|-")
+                if results["result"]:
+                    label = Text(
+                        f"  ✔ id: {id}, name: {name}: {module}.{fun}", style="green"
+                    )
+                else:
+                    label = Text(
+                        f"  ✘ id: {id}, name: {name}: {module}.{fun}", style="red"
+                    )
+                self.console.print(label)
+                if "changes" in results and results["changes"]:
+                    self.console.print(f"    changes: {results["changes"]}")
+                if "comment" in results and results["comment"] != "Success!":
+                    self.console.print(f"    comment: {results["comment"]}")
+                if "duration" in results:
+                    self.console.print(
+                        Text(
+                            f"    duration: {results['duration']} ms",
+                            style="bold magenta",
+                        )
+                    )
+        self.console.rule("[bold green]Finish it")
+        if len(nonreturned) > 0:
+            self.console.print("[red]Minions that did not return[/red]")
+            for item in nonreturned:
+                self.console.print(f"[red]✘ {item}[/red]")
+
     async def taskMan(self, async_comms: dict[str, Any]) -> None:
         try:
             log.info("Starting output Task Manager")
@@ -75,7 +112,10 @@ class Outputs:
                     if event["meta"]["step"] == "final":
                         self.cstatus.stop()
                     log.debug(f"calling outputer {event["meta"]["output"]}")
-                    if event["output"]["return"][0] == {}:
+                    if (
+                        not event["output"]["return"][0]
+                        and "info" not in event["output"]
+                    ):
                         await self.string("No known minions matched target")
                     await getattr(self, event["meta"]["output"])(event["output"])
                 await asyncio.sleep(0.5)

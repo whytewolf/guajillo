@@ -93,8 +93,8 @@ A CLI program for interacting with the salt-api with better output
 │       │               │                 │ use as login     │                 │
 │       │               │                 │ info             │                 │
 │ -o    │ --out         │ {json, yaml,    │ force output     │ auto            │
-│       │               │ boolean}        │ style through a  │                 │
-│       │               │                 │ known output     │                 │
+│       │               │ boolean,        │ style through a  │                 │
+│       │               │ highstate}      │ known output     │                 │
 │       │ --output-file │ OUTPUT_FILE     │ Not implimented, │                 │
 │       │               │                 │ output file to   │                 │
 │       │               │                 │ dump output to   │                 │

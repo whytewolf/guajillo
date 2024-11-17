@@ -38,7 +38,7 @@ class CliParse:
             "-o",
             "--out",
             dest="output",
-            choices=["json", "yaml", "boolean"],
+            choices=["json", "yaml", "boolean", "highstate"],
             help="Output method will auto detect if possable, use this to force or set to json for json output",
         )
         self.parser.add_argument(
@@ -99,7 +99,7 @@ class CliParse:
         options.add_row(
             "-o",
             "--out",
-            "{json, yaml, boolean}",
+            "{json, yaml, boolean, highstate}",
             "force output style through a known output",
             "auto",
         )

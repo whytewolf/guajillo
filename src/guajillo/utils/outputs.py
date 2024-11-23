@@ -107,7 +107,7 @@ class Outputs:
             items = event["info"][0]["Minions"]
             nonreturned = [x for x in items if x not in output]
         for minion, returned in output.items():
-            state = Table(title=f"{minion}")
+            state = Table(title=f"{minion}", width=120, highlight=True)
             state.add_column("State", style="cyan")
             state.add_column("name", style="cyan")
             state.add_column("Function", style="cyan")
@@ -137,7 +137,7 @@ class Outputs:
                 "Final Total",
                 "",
                 "",
-                f"[red]{bad}[/red]/[green]{good}[/green]",
+                f"[red]{bad}[/red]/[green]{good}[/green] ({bad + good})",
                 f"[bold magenta]{total_duration/1000:.4f} s[/bold magenta]",
             )
             self.console.print(state)

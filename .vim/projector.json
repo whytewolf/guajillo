@@ -1,0 +1,10 @@
+[
+  {
+    "name": "guajillo test",
+    "justMyCode": false,
+    "type": "python",
+    "request": "launch",
+    "program": "${workspaceFolder}/src/guajillo/main.py",
+    "args": ["salt", "salt00", "test.ping"]
+  }
+]

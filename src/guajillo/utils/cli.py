@@ -1,9 +1,12 @@
 import argparse
+import operator
 import sys
+from inspect import getmembers, isfunction
 
 from rich.console import Console
 from rich.table import Table
 
+import guajillo.outputs
 from guajillo.utils.console import stderr_console
 
 
@@ -16,6 +19,9 @@ class CliParse:
             add_help=False,
         )
         self.console = console
+        self.outputs = list(
+            map(operator.itemgetter(0), getmembers(guajillo.outputs, isfunction))
+        )
 
     def build_args(self, args: list["str"]) -> None:
         """
@@ -38,7 +44,7 @@ class CliParse:
             "-o",
             "--out",
             dest="output",
-            choices=["json", "yaml", "boolean"],
+            choices=self.outputs,
             help="Output method will auto detect if possable, use this to force or set to json for json output",
         )
         self.parser.add_argument(
@@ -99,7 +105,7 @@ class CliParse:
         options.add_row(
             "-o",
             "--out",
-            "{json, yaml, boolean}",
+            f"{{ {', '.join(self.outputs)} }}",
             "force output style through a known output",
             "auto",
         )

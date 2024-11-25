@@ -168,6 +168,9 @@ class Guajillo:
     async def check_outputer(self, fun: str) -> str:
         defined_outputers = {
             "test.ping": "boolean",
+            "state.sls": "highstate",
+            "state.highstate": "highstate",
+            "state.apply": "highstate",
         }
         if self.parser.parsed_args.output is not None:
             return self.parser.parsed_args.output
@@ -179,6 +182,7 @@ class Guajillo:
         """
         async controller for salt-API client.
         """
+        # TODO: This methed is way to big. need to break it into smaller parts
         try:
             log.info("Starting Client Task Manager")
             self.async_comms = async_comms
@@ -220,7 +224,6 @@ class Guajillo:
                 self.async_comms["update"].set()
             ttl = self.parser.parsed_args.timeout
             # TODO: This needs to be split into its own function
-
             # TODO: use streamMon as a way to tell if we need to check the job
             while output_event["meta"]["step"] != "final":
                 step = "normal"

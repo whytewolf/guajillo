@@ -19,7 +19,6 @@ async def render(event: dict[str, Any], console) -> None:
         state.add_column("Function", style="cyan")
         state.add_column("Result")
         state.add_column("Duration", style="magenta")
-        duration = ""
         total_duration = 0
         good = 0
         bad = 0
@@ -29,6 +28,7 @@ async def render(event: dict[str, Any], console) -> None:
             vexed = returned["return"]["return"]["data"][minion]
 
         for id, results in vexed.items():
+            duration = ""
             module, id, name, fun = id.split("_|-")
             if results["result"]:
                 result = Text("✔ ", style="green")

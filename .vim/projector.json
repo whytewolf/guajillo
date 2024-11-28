@@ -6,5 +6,21 @@
     "request": "launch",
     "program": "${workspaceFolder}/src/guajillo/main.py",
     "args": ["salt", "salt00", "test.ping"]
+  },
+  {
+    "name": "guajillo highstate",
+    "justMyCode": false,
+    "type": "python",
+    "request": "launch",
+    "program": "${workspaceFolder}/src/guajillo/main.py",
+    "args": ["--out", "highstate", "salt", "salt00", "state.apply"]
+  },
+  {
+    "name": "guajillo orchestration",
+    "justMyCode": false,
+    "type": "python",
+    "request": "launch",
+    "program": "${workspaceFolder}/src/guajillo/main.py",
+    "args": ["--out", "highstate", "salt-run", "state.orch", "orch.test"]
   }
 ]
